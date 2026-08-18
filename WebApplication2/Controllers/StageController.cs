@@ -33,7 +33,7 @@ namespace WebApplication2.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
 
         }
@@ -55,7 +55,7 @@ namespace WebApplication2.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
 
         }
