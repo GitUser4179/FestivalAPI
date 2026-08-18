@@ -22,20 +22,18 @@ namespace WebApplication2.Controllers
         {
             try
             {
-            var artists = await _dbContext.Artists.ToListAsync();
+                var artists = await _dbContext.Artists.ToListAsync();
 
-            if (artists == null)
-            {
-                return NotFound();
+                if (artists != null)
+                {
+                    return Ok(artists);
+                }
+                else
+                    return NotFound();
             }
-
-            return Ok(artists);
-            }
-
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                return NotFound();
+                return BadRequest(ex);
             }
         }
 
@@ -43,64 +41,95 @@ namespace WebApplication2.Controllers
         [Route("GetSingle/{id}")]
         public async Task<ActionResult<List<Artist>>> GetArtistById(int id)
         {
-
-            var artist = _dbContext.Artists.FirstOrDefault(i => i.Id == id);
-
-            if (artist == null)
+            try
             {
-                return NotFound();
-            }
+                var artist = _dbContext.Artists.FirstOrDefault(i => i.Id == id);
 
-            return Ok(artist);
+                if (artist != null)
+                {
+                    return Ok(artist);
+                }
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPost]
         [Route("CreateArtist")]
         public async Task<ActionResult<Artist>> CreateArtist(Artist artist)
         {
-
-            if (artist == null)
+            try
             {
-                return NotFound();
+                if (artist != null)
+                {
+                    var artists = await _dbContext.Artists.ToListAsync();
+
+                    _dbContext.Artists.Add(
+                        new Artist { Id = 4, Name = "Artist 4"}    
+                    );
+
+                    await _dbContext.SaveChangesAsync();
+                    return Ok(artists);
+                }
+                else
+                    return NotFound();
             }
-
-            var artists = await _dbContext.Artists.ToListAsync();
-
-            _dbContext.Artists.Add(
-                new Artist { Id = 4, Name = "Artist 4"}    
-            );
-
-            await _dbContext.SaveChangesAsync();
-            return Ok(artists);
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPut]
         [Route("UpdateArtist/{id}")]
         public async Task<ActionResult<List<Artist>>> UpdateArtist(int id)
         {
-            var artist = await _dbContext.Artists.FirstOrDefaultAsync(i => i.Id == id);
-            
-            if (artist != null) artist.Name = $"Updated Artist {id}";
+            try
+            {
+                var artist = await _dbContext.Artists.FirstOrDefaultAsync(i => i.Id == id);
 
-            await _dbContext.SaveChangesAsync();
-            return Ok(artist);
+                if (artist != null)
+                {
+                    artist.Name = $"Updated Artist {id}";
+
+                    await _dbContext.SaveChangesAsync();
+                    return Ok(artist);
+                }
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpDelete]
         [Route("DeleteArtist/{id}")]
         public async Task<ActionResult<List<Artist>>> DeleteArtist(int id) 
         {
-            var artist = await _dbContext.Artists.FirstOrDefaultAsync(i => i.Id == id);
-            
-            if (artist != null) 
+            try
             {
-                _dbContext.Artists.Remove(artist);
+                var artist = await _dbContext.Artists.FirstOrDefaultAsync(i => i.Id == id);
+            
+                if (artist != null) 
+                {
+                    _dbContext.Artists.Remove(artist);
 
-                await _dbContext.SaveChangesAsync();
-                return Ok("Artist deleted");
+                    await _dbContext.SaveChangesAsync();
+                    return Ok("Artist deleted");
+                }
+                else 
+                    return NotFound("");
             }
-            else 
-                return NotFound("");
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     };
 }
