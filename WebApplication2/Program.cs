@@ -1,4 +1,6 @@
 
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 namespace WebApplication2
@@ -14,6 +16,11 @@ namespace WebApplication2
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            var connectionString = "Data Source=Db/database.db";
+
+            builder.Services.AddDbContext<FestivalDbContext>(options =>
+                options.UseSqlite(connectionString));
 
             var app = builder.Build();
 
