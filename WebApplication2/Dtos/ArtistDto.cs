@@ -1,6 +1,6 @@
 ﻿namespace WebApplication2.Dtos
 {
-    public record ArtistDto
+    public class ArtistDto
     {
         public string Name { get; set; }
     }

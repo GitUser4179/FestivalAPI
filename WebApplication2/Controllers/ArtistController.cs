@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace WebApplication2.Controllers
 {
@@ -18,7 +19,7 @@ namespace WebApplication2.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ActionResult<List<Artist>>> GetAllArtists()
+        public async Task<IActionResult> GetAllArtists()
         {
             try
             {
@@ -49,12 +50,14 @@ namespace WebApplication2.Controllers
                 {
                     return Ok(artist);
                 }
-                else
+                else if (artist == null)
                     return NotFound();
+                else
+                    return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
 
@@ -69,24 +72,26 @@ namespace WebApplication2.Controllers
                     var artists = await _dbContext.Artists.ToListAsync();
 
                     _dbContext.Artists.Add(
-                        new Artist { Id = 4, Name = "Artist 4"}    
+                        new Artist { Id = 4, Name = "Artist 4" }
                     );
 
                     await _dbContext.SaveChangesAsync();
                     return Ok(artists);
                 }
-                else
+                else if (artist == null)
                     return NotFound();
+                else
+                    return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
 
         [HttpPut]
         [Route("UpdateArtist/{id}")]
-        public async Task<ActionResult<List<Artist>>> UpdateArtist(int id)
+        public async Task<ActionResult<List<Artist>>> UpdateArtist(int id, ArtistDto updatedArtist)
         {
             try
             {
@@ -94,41 +99,45 @@ namespace WebApplication2.Controllers
 
                 if (artist != null)
                 {
-                    artist.Name = $"Updated Artist {id}";
+                    artist.Name = updatedArtist.Name;
 
                     await _dbContext.SaveChangesAsync();
                     return Ok(artist);
                 }
-                else
+                else if (artist == null)
                     return NotFound();
+                else
+                    return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
 
         [HttpDelete]
         [Route("DeleteArtist/{id}")]
-        public async Task<ActionResult<List<Artist>>> DeleteArtist(int id) 
+        public async Task<IActionResult> DeleteArtist(int id)
         {
             try
             {
                 var artist = await _dbContext.Artists.FirstOrDefaultAsync(i => i.Id == id);
-            
-                if (artist != null) 
+
+                if (artist != null)
                 {
                     _dbContext.Artists.Remove(artist);
 
                     await _dbContext.SaveChangesAsync();
                     return Ok("Artist deleted");
                 }
-                else 
-                    return NotFound("");
+                else if (artist == null)
+                    return NotFound();
+                else
+                    return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
     };
